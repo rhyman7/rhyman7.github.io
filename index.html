@@ -69,7 +69,11 @@
     color: var(--text);
     text-decoration: none;
   }
-  .league-main:hover { background: var(--panel-alt); }
+  .league.cfb { --hover: #107fcb; }  /* NCAA logo ring blue */
+  .league.nfl { --hover: #003a73; }  /* NFL shield blue */
+  .league-main:hover { background: var(--hover); }
+  .league-main:hover .league-tag,
+  .league-main:hover .league-desc { color: rgba(255, 255, 255, 0.85); }
   .league-tag {
     font-size: 0.6875rem;
     font-weight: 600;
@@ -89,7 +93,7 @@
     font-weight: 800;
   }
   .league-arrow { font-size: 1.75rem; color: var(--text-dim); transition: transform 0.15s ease, color 0.15s ease; }
-  .league-main:hover .league-arrow { transform: translateX(4px); color: var(--text); }
+  .league-main:hover .league-arrow { transform: translateX(4px); color: #fff; }
   .league-desc { margin: 0; color: var(--text-dim); }
 
   .league-links { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--border); margin-top: auto; }
@@ -105,8 +109,8 @@
     font-size: 0.875rem;
   }
   .league-links a::after { content: "\2192"; color: var(--mute); }
-  .league-links a:hover { background: var(--panel-alt); color: var(--text); }
-  .league-links a:hover::after { color: var(--text); }
+  .league-links a:hover { background: var(--hover); color: #fff; }
+  .league-links a:hover::after { color: #fff; }
 
   footer { padding: 20px 28px 28px; text-align: center; font-size: 0.78rem; color: var(--text-dim); }
 
@@ -135,7 +139,7 @@
   <div class="leagues">
     <div class="league-col">
     <img class="league-logo" src="/img/ncaa.png" width="232" height="320" alt="NCAA">
-    <section class="league">
+    <section class="league cfb">
       <a class="league-main" href="/cfb/index.html">
         <span class="league-tag">College Football</span>
         <span class="league-name">CFB Matchups <span class="league-arrow" aria-hidden="true">&rarr;</span></span>
@@ -152,7 +156,7 @@
 
     <div class="league-col">
     <img class="league-logo" src="/img/nfl.png" width="242" height="320" alt="NFL">
-    <section class="league">
+    <section class="league nfl">
       <a class="league-main" href="/nfl/index.html">
         <span class="league-tag">NFL</span>
         <span class="league-name">NFL Matchups <span class="league-arrow" aria-hidden="true">&rarr;</span></span>
