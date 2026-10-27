@@ -36,6 +36,7 @@ whenever a convention changes.
 - Logos: `img/ncaa.png` and `img/nfl.png`. The value boards' landing page uses copies of
   these, so keep the file names.
 - Keep the footer credit for weather data (Open-Meteo).
+- **Favicon:** the RH monogram, as `favicon.ico`, `favicon-192.png` and `apple-touch-icon.png` at the repo root (the same three files in rhyman7/nfl, rhyman7/cfb, rhyman7.github.io and rhyman7/fb-value-board). Every page links all three in `<head>`, right after the viewport meta; a new page gets the same three lines.
 
 ## Testing a change
 
