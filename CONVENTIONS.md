@@ -34,11 +34,12 @@ whenever a convention changes.
 - **Stay styled like the dashboards:** the same graphite palette (CSS custom properties on
   `:root`), Archivo from Google Fonts, and the dashboards' page names. If the dashboards'
   look or page names change, update this page in the same change.
-- Football first: two league cards, college then NFL. Then a Basketball heading with the NBA
-  card (college basketball goes beside it when rhyman7/cbb exists). The NBA card has no logo.
+- Two landing pages: football at `/` (college then NFL) and basketball at `/basketball/`
+  (college then NBA, no logos). Each links to the other once, below its cards.
   Each card links to its dashboard's home (`/cfb/index.html`, `/nfl/index.html`,
-  `/nba/index.html`) and to each of its pages, using the same page names as the dashboards'
-  nav. If a dashboard page is added, renamed or removed, update its card.
+  `/nba/index.html`, `/cbb/index.html`) and to each of its pages, using the same page names as
+  the dashboards' nav. If a dashboard page is added, renamed or removed, update its card.
+  The college basketball card says "coming soon" and links nowhere until rhyman7/cbb is live.
 - Links are root-relative (`/nfl/…`, `/cfb/…`, `img/…`).
 - Logos: `img/ncaa.png` and `img/nfl.png`. The value boards' landing page uses copies of
   these, so keep the file names.

@@ -74,8 +74,9 @@
   }
   .league.cfb { --hover: #107fcb; }  /* NCAA logo ring blue */
   .league.nfl { --hover: #003a73; }  /* NFL shield blue */
-  .league.nba { --hover: #1d428a; }  /* NBA logo blue */
-  .sport-head { margin: 48px 0 16px; text-align: center; font-size: 2rem; line-height: 1; font-stretch: 62%; font-weight: 800; }
+  .cross-link { margin: 40px 0 0; text-align: center; font-size: 1.125rem; font-weight: 600; }
+  .cross-link a { color: var(--text-dim); text-decoration: none; border-bottom: 1px solid var(--border); padding-bottom: 2px; }
+  .cross-link a:hover { color: var(--text); border-color: var(--text); }
   .league-main:hover { background: var(--hover); }
   .league-main:hover .league-tag,
   .league-main:hover .league-desc { color: rgba(255, 255, 255, 0.85); }
@@ -122,7 +123,6 @@
   @media (prefers-reduced-motion: reduce) { .league-arrow { transition: none; } }
 
   @media (max-width: 820px) {
-    .sport-head { margin-top: 36px; }
     main { padding: 32px 16px 40px; }
     .hub-title { font-size: 3.75rem; }
     .leagues { grid-template-columns: minmax(0, 1fr); gap: 36px; }
@@ -182,23 +182,7 @@
     </div>
   </div>
 
-  <h2 class="sport-head">Basketball</h2>
-  <div class="leagues">
-    <div class="league-col">
-    <section class="league nba">
-      <a class="league-main" href="/nba/index.html">
-        <span class="league-tag">NBA</span>
-        <span class="league-name">NBA Matchups <span class="league-arrow" aria-hidden="true">&rarr;</span></span>
-        <p class="league-desc">Every game on tonight's slate, with rest, adjusted ratings and a full offense-vs-defense breakdown of each matchup.</p>
-      </a>
-      <ul class="league-links">
-        <li><a href="/nba/ratings.html">Team Ratings</a></li>
-        <li><a href="/nba/compare.html">Compare Any Two Teams</a></li>
-        <li><a href="/nba/how-to-read.html">How to Read Matchups</a></li>
-      </ul>
-    </section>
-    </div>
-  </div>
+  <p class="cross-link"><a href="/basketball/">Basketball boards: NBA and college &rarr;</a></p>
 </main>
 
 <footer>
