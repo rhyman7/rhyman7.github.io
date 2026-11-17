@@ -39,7 +39,6 @@ whenever a convention changes.
   Each card links to its dashboard's home (`/cfb/index.html`, `/nfl/index.html`,
   `/nba/index.html`, `/cbb/index.html`) and to each of its pages, using the same page names as
   the dashboards' nav. If a dashboard page is added, renamed or removed, update its card.
-  The college basketball card says "coming soon" and links nowhere until rhyman7/cbb is live.
 - Links are root-relative (`/nfl/…`, `/cfb/…`, `img/…`).
 - Logos: `img/ncaa.png` and `img/nfl.png`. The value boards' landing page uses copies of
   these, so keep the file names.
