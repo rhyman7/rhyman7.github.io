@@ -35,7 +35,7 @@ whenever a convention changes.
   `:root`), Archivo from Google Fonts, and the dashboards' page names. If the dashboards'
   look or page names change, update this page in the same change.
 - Two landing pages: football at `/` (college then NFL) and basketball at `/basketball/`
-  (college then NBA, no logos). Each links to the other once, below its cards.
+  (college then NBA, with `img/ncaa-basketball.png` and `img/nba.png` above the cards at the football logos' size). Each links to the other once, below its cards.
   Each card links to its dashboard's home (`/cfb/index.html`, `/nfl/index.html`,
   `/nba/index.html`, `/cbb/index.html`) and to each of its pages, using the same page names as
   the dashboards' nav. If a dashboard page is added, renamed or removed, update its card.
