@@ -57,7 +57,7 @@
   .leagues { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
   .league-col { display: flex; flex-direction: column; align-items: center; gap: 20px; }
   .league-col .league { width: 100%; flex: 1; }
-  .league-logo { display: block; height: 160px; width: auto; }
+  .league-logo { display: block; height: 160px; width: auto; max-width: 100%; object-fit: contain; }
   .league {
     display: flex;
     flex-direction: column;
@@ -148,6 +148,7 @@
 
   <div class="leagues">
     <div class="league-col">
+    <img class="league-logo" src="/img/ncaa-basketball.png" width="309" height="320" alt="NCAA Basketball">
     <section class="league cbb">
       <a class="league-main" href="/cbb/index.html">
         <span class="league-tag">College Basketball</span>
@@ -163,6 +164,7 @@
     </div>
 
     <div class="league-col">
+    <img class="league-logo" src="/img/nba.png" width="746" height="320" alt="NBA">
     <section class="league nba">
       <a class="league-main" href="/nba/index.html">
         <span class="league-tag">NBA</span>
