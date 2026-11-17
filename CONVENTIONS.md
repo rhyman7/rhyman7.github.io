@@ -5,9 +5,10 @@ whenever a convention changes.
 
 - Live site: https://rhyman7.github.io/ (GitHub Pages, branch `main`, repo root). One page,
   `index.html`, plus the logos in `img/`.
-- It's the landing page for the two matchup dashboards, which have their own repos and
-  CONVENTIONS.md: [rhyman7/nfl](https://github.com/rhyman7/nfl) (served at `/nfl/`) and
-  [rhyman7/cfb](https://github.com/rhyman7/cfb) (served at `/cfb/`).
+- It's the landing page for the matchup dashboards, which have their own repos and
+  CONVENTIONS.md: [rhyman7/nfl](https://github.com/rhyman7/nfl) (served at `/nfl/`),
+  [rhyman7/cfb](https://github.com/rhyman7/cfb) (served at `/cfb/`) and
+  [rhyman7/nba](https://github.com/rhyman7/nba) (served at `/nba/`).
 
 ## How changes get made
 
@@ -33,9 +34,11 @@ whenever a convention changes.
 - **Stay styled like the dashboards:** the same graphite palette (CSS custom properties on
   `:root`), Archivo from Google Fonts, and the dashboards' page names. If the dashboards'
   look or page names change, update this page in the same change.
-- Two league cards, college first, then NFL. Each card links to its dashboard's home
-  (`/cfb/index.html`, `/nfl/index.html`) and to each of its pages, using the same page names
-  as the dashboards' nav. If a dashboard page is added, renamed or removed, update its card.
+- Football first: two league cards, college then NFL. Then a Basketball heading with the NBA
+  card (college basketball goes beside it when rhyman7/cbb exists). The NBA card has no logo.
+  Each card links to its dashboard's home (`/cfb/index.html`, `/nfl/index.html`,
+  `/nba/index.html`) and to each of its pages, using the same page names as the dashboards'
+  nav. If a dashboard page is added, renamed or removed, update its card.
 - Links are root-relative (`/nfl/…`, `/cfb/…`, `img/…`).
 - Logos: `img/ncaa.png` and `img/nfl.png`. The value boards' landing page uses copies of
   these, so keep the file names.
