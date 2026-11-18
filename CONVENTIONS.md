@@ -27,7 +27,9 @@ whenever a convention changes.
 - **Ask first** if anything is unclear or a change could break the live site.
 - **Out of scope here:** prediction and betting-model work belongs in the separate CFB/NFL
   Model project. The Weekly Value Boards (rhyman7/fb-value-board) are kept separate for now:
-  don't link them from here until Ryan says otherwise.
+  don't link them from here until Ryan says otherwise. The one exception (Ryan's call, Nov 17,
+  2026): the **Weekly Review** (`/fb-value-board/review/`, built in rhyman7/fb-value-board) is
+  linked once below the football cards, as a second cross-link under the basketball one.
 
 ## Page
 
