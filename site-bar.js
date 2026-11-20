@@ -1,5 +1,5 @@
 /* Weekly Gridiron Board site bar: one strip across the top of every football page
-   (the hub, both matchup dashboards, both value boards, Parlays and the Weekly Review).
+   (the hub, both matchup dashboards, both value boards, Parlays, the Weekly Review and Recommended).
    Each page loads it with <script src="/site-bar.js"></script> as the first thing in <body>.
    It writes its own markup and styles, so a change here reaches every page at once.
    If it fails to load (a page opened from disk or a local server), the page is unchanged. */
@@ -13,7 +13,8 @@
     ["College Value Board", "/fb-value-board/docs/cfb/", "vb-cfb"],
     ["NFL Value Board", "/fb-value-board/docs/", "vb-nfl"],
     ["Parlays", "/fb-value-board/docs/parlays.html", "parlays"],
-    ["Weekly Review", "/fb-value-board/review/", "review"]
+    ["Weekly Review", "/fb-value-board/review/", "review"],
+    ["Recommended", "/fb-value-board/docs/recommended/", "recommended"]
   ];
 
   function section(path) {
@@ -21,6 +22,7 @@
     if (path.indexOf("/nfl/") === 0) return "nfl";
     if (path.indexOf("/fb-value-board/review/") === 0) return "review";
     if (path.indexOf("/fb-value-board/docs/parlays") === 0) return "parlays";
+    if (path.indexOf("/fb-value-board/docs/recommended") === 0) return "recommended";
     if (path.indexOf("/fb-value-board/docs/cfb/") === 0) return "vb-cfb";
     if (path.indexOf("/fb-value-board/docs/manual/") === 0) return "";
     if (path.indexOf("/fb-value-board/docs/") === 0) return "vb-nfl";

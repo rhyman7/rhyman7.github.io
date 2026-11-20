@@ -37,7 +37,7 @@ whenever a convention changes.
   look or page names change, update this page in the same change.
 - **Site bar (`site-bar.js`).** One script that writes the strip across the top of every football
   page: Weekly Gridiron Board (home) | CFB Matchups | NFL Matchups | College Value Board | NFL Value
-  Board | Parlays | Weekly Review, with Basketball as a side link on the right. Every page in this
+  Board | Parlays | Weekly Review | Recommended (added Nov 20, 2026), with Basketball as a side link on the right. Every page in this
   repo's hub, rhyman7/nfl, rhyman7/cfb and rhyman7/fb-value-board loads it as the first thing in
   `<body>` (`<script src="/site-bar.js"></script>`), so a change here reaches every page at once.
   It marks the current section from the page's path (`section()`), carries its own styles (fixed
@@ -47,7 +47,7 @@ whenever a convention changes.
 - **Hub sections,** in this order: **Matchups and stats** (CFB Matchups, NFL Matchups, under the
   logos), **Value boards** (College Value Board, NFL Value Board; each card lists Best Bets (PDF),
   Model Leans, not bets (PDF) and the boards' seven sections after Manual) and **Tools and record**
-  (Parlays with its tabs; Weekly Review with each league and its Season Patterns). College is always
+  (Parlays with its tabs; Weekly Review with each league and its Season Patterns; Recommended, the value boards' record of picks under fixed rules, `/fb-value-board/docs/recommended/`). College is always
   on the left. If a board section, Parlays tab or Review route is added, renamed or removed, update
   its card. The page keeps the betting disclaimer above the footer.
 - Two landing pages: football at `/` (college then NFL) and basketball at `/basketball/`
