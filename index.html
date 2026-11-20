@@ -7,11 +7,11 @@
 <link rel="icon" href="favicon-192.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <title>Weekly Gridiron Board</title>
-<meta name="description" content="Weekly matchup boards for college football and the NFL: spreads, totals, implied scores, forecasts and offense-vs-defense breakdowns.">
+<meta name="description" content="College football and the NFL in one place: weekly matchup stats, value boards, parlay tools and a graded review of every game.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Weekly Gridiron Board">
 <meta property="og:title" content="Weekly Gridiron Board">
-<meta property="og:description" content="Weekly matchup boards for college football and the NFL.">
+<meta property="og:description" content="College football and the NFL in one place: matchup stats, value boards, parlay tools and a weekly review.">
 <meta property="og:url" content="https://rhyman7.github.io/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -51,7 +51,7 @@
   /* ---------- Heading ---------- */
   .hub-head { margin-bottom: 28px; text-align: center; }
   .hub-title { margin: 0; font-size: 4.5rem; line-height: 0.95; font-stretch: 62%; font-weight: 800; }
-  .hub-sub { margin: 10px auto 0; max-width: 560px; color: var(--text-dim); }
+  .hub-sub { margin: 10px auto 0; max-width: 600px; color: var(--text-dim); }
 
   /* ---------- League panels ---------- */
   .leagues { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
@@ -119,6 +119,11 @@
   .league-links a:hover { background: var(--hover); color: #fff; }
   .league-links a:hover::after { color: #fff; }
 
+  .hub-section { margin: 44px 0 14px; font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); }
+  .hub-section.first { margin-top: 0; }
+  .league.plain { --hover: var(--panel-alt); }
+  .hub-note { margin: 28px 0 0; text-align: center; font-size: 0.78rem; color: var(--text-dim); }
+
   footer { padding: 20px 28px 28px; text-align: center; font-size: 0.78rem; color: var(--text-dim); }
 
   @media (prefers-reduced-motion: reduce) { .league-arrow { transition: none; } }
@@ -137,12 +142,14 @@
 </style>
 </head>
 <body>
+<script src="/site-bar.js"></script>
 <main>
   <section class="hub-head">
-    <h1 class="hub-title">Weekly Gridiron Slate</h1>
-    <p class="hub-sub">Every game this week on one board: spreads, totals, implied scores and game-time forecasts, with a full offense-vs-defense breakdown of each matchup.</p>
+    <h1 class="hub-title">Weekly Gridiron Board</h1>
+    <p class="hub-sub">Every game this week in one place: matchup stats, the model's numbers against the market, parlay tools and a graded look back at every game.</p>
   </section>
 
+  <h2 class="hub-section first">Matchups and stats</h2>
   <div class="leagues">
     <div class="league-col">
     <img class="league-logo" src="/img/ncaa.png" width="232" height="320" alt="NCAA">
@@ -183,12 +190,83 @@
     </div>
   </div>
 
+  <h2 class="hub-section">Value boards</h2>
+  <div class="leagues">
+    <section class="league cfb">
+      <a class="league-main" href="/fb-value-board/docs/cfb/">
+        <span class="league-tag">College Football</span>
+        <span class="league-name">College Value Board <span class="league-arrow" aria-hidden="true">&rarr;</span></span>
+        <p class="league-desc">The model's number against the market for every game, with player projections, props and the model's graded record.</p>
+      </a>
+      <ul class="league-links">
+        <li><a href="/fb-value-board/docs/cfb/best-bets.pdf" download>Best Bets (PDF)</a></li>
+        <li><a href="/fb-value-board/docs/cfb/model-leans.pdf" download>Model Leans, not bets (PDF)</a></li>
+        <li><a href="/fb-value-board/docs/cfb/#matchups">This Week's Matchups</a></li>
+        <li><a href="/fb-value-board/docs/cfb/#games">Games</a></li>
+        <li><a href="/fb-value-board/docs/cfb/#players">Players</a></li>
+        <li><a href="/fb-value-board/docs/cfb/#props">Props</a></li>
+        <li><a href="/fb-value-board/docs/cfb/#history">Past Weeks</a></li>
+        <li><a href="/fb-value-board/docs/cfb/#ratings">Team Ratings</a></li>
+        <li><a href="/fb-value-board/docs/cfb/#model">Model Record</a></li>
+      </ul>
+    </section>
+    <section class="league nfl">
+      <a class="league-main" href="/fb-value-board/docs/">
+        <span class="league-tag">NFL</span>
+        <span class="league-name">NFL Value Board <span class="league-arrow" aria-hidden="true">&rarr;</span></span>
+        <p class="league-desc">The model's number against the market for every game, with player projections, props and the model's graded record.</p>
+      </a>
+      <ul class="league-links">
+        <li><a href="/fb-value-board/docs/best-bets.pdf" download>Best Bets (PDF)</a></li>
+        <li><a href="/fb-value-board/docs/model-leans.pdf" download>Model Leans, not bets (PDF)</a></li>
+        <li><a href="/fb-value-board/docs/#matchups">This Week's Matchups</a></li>
+        <li><a href="/fb-value-board/docs/#games">Games</a></li>
+        <li><a href="/fb-value-board/docs/#players">Players</a></li>
+        <li><a href="/fb-value-board/docs/#props">Props</a></li>
+        <li><a href="/fb-value-board/docs/#history">Past Weeks</a></li>
+        <li><a href="/fb-value-board/docs/#ratings">Team Ratings</a></li>
+        <li><a href="/fb-value-board/docs/#model">Model Record</a></li>
+      </ul>
+    </section>
+  </div>
+
+  <h2 class="hub-section">Tools and record</h2>
+  <div class="leagues">
+    <section class="league plain">
+      <a class="league-main" href="/fb-value-board/docs/parlays.html">
+        <span class="league-tag">NFL and college</span>
+        <span class="league-name">Parlays <span class="league-arrow" aria-hidden="true">&rarr;</span></span>
+        <p class="league-desc">Find legs, fit a profit boost and build a parlay from this week's games and props.</p>
+      </a>
+      <ul class="league-links">
+        <li><a href="/fb-value-board/docs/parlays.html#suggest">Leg Finder</a></li>
+        <li><a href="/fb-value-board/docs/parlays.html#boost">Boost Finder</a></li>
+        <li><a href="/fb-value-board/docs/parlays.html#build">Builder</a></li>
+        <li><a href="/fb-value-board/docs/parlays.html#record">Record</a></li>
+        <li><a href="/fb-value-board/docs/parlays.html#how">How It Works</a></li>
+      </ul>
+    </section>
+    <section class="league plain">
+      <a class="league-main" href="/fb-value-board/review/">
+        <span class="league-tag">NFL and college</span>
+        <span class="league-name">Weekly Review <span class="league-arrow" aria-hidden="true">&rarr;</span></span>
+        <p class="league-desc">Every finished game looked back on: what went right, what went wrong and what was chance.</p>
+      </a>
+      <ul class="league-links">
+        <li><a href="/fb-value-board/review/#cfb">College Football</a></li>
+        <li><a href="/fb-value-board/review/#nfl">NFL</a></li>
+        <li><a href="/fb-value-board/review/#cfb-patterns">College Season Patterns</a></li>
+        <li><a href="/fb-value-board/review/#nfl-patterns">NFL Season Patterns</a></li>
+      </ul>
+    </section>
+  </div>
+
   <p class="cross-link"><a href="/basketball/">Basketball boards: NBA and college &rarr;</a></p>
-  <p class="cross-link review-link"><a href="/fb-value-board/review/">Weekly Review: every game looked back on &rarr;</a></p>
+  <p class="hub-note">For research and entertainment. Past results do not predict future results, and nothing here is betting advice.</p>
 </main>
 
 <footer>
-  <p>Lines: ESPN when available. <a href="https://open-meteo.com/" rel="noopener">Weather data by Open-Meteo.com</a>.</p>
+  <p>Lines and prices: ESPN when available. <a href="https://open-meteo.com/" rel="noopener">Weather data by Open-Meteo.com</a>.</p>
 </footer>
 </body>
 </html>
