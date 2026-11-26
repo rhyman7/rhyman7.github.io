@@ -7,6 +7,16 @@
   "use strict";
   if (document.getElementById("wgb-bar")) return;
 
+  /* Glossary hints (glossary.js): terms in headings and column headers get a dotted underline and
+     show their Start here definition on hover or tap. Set to false to switch it off everywhere. */
+  var GLOSSARY = true;
+  if (GLOSSARY) {
+    var gs = document.createElement("script");
+    gs.src = "/glossary.js";
+    gs.defer = true;
+    document.head.appendChild(gs);
+  }
+
   var LINKS = [
     ["CFB Matchups", "/cfb/index.html", "cfb"],
     ["NFL Matchups", "/nfl/index.html", "nfl"],
