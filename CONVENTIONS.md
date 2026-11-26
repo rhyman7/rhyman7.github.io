@@ -43,7 +43,7 @@ whenever a convention changes.
   It marks the current section from the page's path (`section()`), carries its own styles (fixed
   graphite colors, so it looks the same above the value boards' own theme), scrolls sideways on a
   phone and is hidden in print. If a section is added, renamed or moved, update `LINKS` and
-  `section()`. The basketball pages don't load it.
+  `section()`. The basketball pages, Prop Ladder and the value boards' manual load the one-site bar below (Nov 26, 2026).
 - **The one-site bar (Nov 25, 2026).** `site-bar.js` now holds two bars. A page that loads it as
   `<script src="/site-bar.js" data-shell="2"></script>` gets the new one; a page without the
   attribute keeps the one-row bar above until its site is moved over. The new bar has two rows on
@@ -56,6 +56,17 @@ whenever a convention changes.
   removing its own menu in the same change (plan: Project doc
   `claude/plan-one-site-redesign-2026-11-25.md`). It remembers the last league visited
   (`localStorage` `wgb-league`) so Matchups and Value Boards open on it.
+- **Installable app (Nov 26, 2026).** The whole site installs to a phone's home screen as one app,
+  "Gridiron". `manifest.webmanifest` (scope `/`, opens the hub, no browser chrome) and the icons
+  `favicon-192.png`, `icon-512.png` and `icon-maskable-512.png` live in the repo root. `site-bar.js`
+  adds the manifest link and the phone app tags to every page that loads it, so a new page needs
+  nothing extra; the hub also carries them in its own `<head>`. Opened from the home screen
+  (`IN_APP`), both bars add a Back arrow on the left and a Reload button on the right, because the
+  app has no browser buttons; in a normal browser neither shows. A page that doesn't load
+  `site-bar.js` has no Back arrow in the app, so every page on the site must load it. There is no
+  service worker and no offline copy: pages always load fresh (plan: Project doc
+  `claude/plan-installable-app-2026-11-26.md`). The bar marks Basketball as the current section on
+  `/basketball/`, `/nba/`, `/cbb/` and `/bb-value-board/`, and `glossary.js` skips those pages.
 - **Hub sections,** in this order: **Matchups and stats** (CFB Matchups, NFL Matchups, under the
   logos), **Value boards** (College Value Board, NFL Value Board; each card lists Best Bets (PDF),
   Model Leans, not bets (PDF) and the boards' seven sections after Manual) and **Tools and record**

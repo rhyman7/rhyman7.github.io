@@ -17,6 +17,7 @@
   window.__wgbGlossary = true;
   var path = location.pathname;
   if (path.indexOf("/start/") === 0 || path.indexOf("/status/") === 0) return;
+  if (/^\/(basketball|nba|cbb|bb-value-board)\//.test(path)) return;   // the definitions are the football site's
 
   /* [pattern, id of the entry on /start/]. Order matters: the first pattern that matches a label wins. */
   var TERMS = [
