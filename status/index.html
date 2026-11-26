@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<title>Site status · Weekly Gridiron Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap">
+<style>
+  /* Same tokens and type as the hub and the dashboards. */
+  :root {
+    --bg: #131416; --panel: #1b1d21; --panel-alt: #24272c; --border: #353a42;
+    --text: #f2f1ee; --text-dim: #9da2ab; --mute: #6b717c; --radius: 8px;
+    --ok: #4cc38a; --warn: #e5b454; --bad: #f0616d;
+    --font: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; font-family: var(--font); font-size: 0.9375rem; line-height: 1.4; background: var(--bg); color: var(--text); }
+  main { max-width: 1040px; margin: 0 auto; padding: 22px 18px 60px; }
+  h1 { font-size: 1.6rem; font-stretch: 85%; font-weight: 750; margin: 6px 0 4px; }
+  .sub { color: var(--text-dim); margin: 0 0 18px; }
+  .summary { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; background: var(--panel); border: 1px solid var(--border);
+             border-radius: var(--radius); padding: 14px 16px; margin-bottom: 20px; }
+  .summary strong { font-size: 1.15rem; }
+  .summary button { margin-left: auto; font: inherit; color: var(--text); background: var(--panel-alt); border: 1px solid var(--border);
+                    border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+  .summary button:hover { border-color: var(--text-dim); }
+  h2 { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); margin: 26px 0 8px; font-weight: 650; }
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .row { display: grid; grid-template-columns: 22px minmax(150px, 1.1fr) minmax(0, 2.4fr); gap: 10px; padding: 10px 14px; border-top: 1px solid var(--border); align-items: start; }
+  .row:first-child { border-top: 0; }
+  .dot { width: 11px; height: 11px; border-radius: 50%; margin-top: 5px; background: var(--mute); }
+  .ok .dot { background: var(--ok); } .warn .dot { background: var(--warn); } .bad .dot { background: var(--bad); }
+  .what { font-weight: 600; }
+  .what small { display: block; font-weight: 400; color: var(--mute); font-size: 0.78rem; }
+  .val { color: var(--text); overflow-wrap: anywhere; }
+  .val small { display: block; color: var(--text-dim); font-size: 0.8rem; }
+  .bad .val, .warn .val { font-weight: 600; }
+  .note { color: var(--text-dim); font-size: 0.84rem; margin: 8px 2px 0; }
+  a { color: inherit; }
+  @media (max-width: 620px) { .row { grid-template-columns: 18px 1fr; } .val { grid-column: 2; } }
+</style>
+</head>
+<body>
+<script src="/site-bar.js"></script>
+<main>
+  <h1>Site status</h1>
+  <p class="sub">Is every page running on current data? Checked in your browser each time this page loads; nothing here is stored. Not linked from the site.</p>
+  <div class="summary" id="summary"><strong>Checking…</strong><button id="again" type="button">Check again</button></div>
+  <div id="groups"></div>
+  <p class="note">Ages are judged for the season (August to February). Out of season, old data is expected.</p>
+  <p class="note">The Claude scheduled tasks cannot be read from a web page. Each one shows up here through the file it writes: the dashboard data (the two daily dashboard updates), the college injury tags and starting-quarterback list (the CFB daily update), and the Weekly Review weeks (the two review tasks).</p>
+</main>
+<script>
+"use strict";
+/* Site status: reads the live files each site publishes and judges them against simple rules.
+   Every address is on this origin (rhyman7.github.io), except the GitHub Actions list, which uses
+   GitHub's public API (60 requests an hour without signing in; this page makes five per load).
+   To add a check: fetch the file in load() and push a row in build(). */
+const H = 3600e3;
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+// "2026-11-26 00:44 UTC", "2026-11-26 00:40", "2026-11-25" and ISO strings; anything without a zone is UTC.
+function when(s) {
+  if (!s) return null;
+  let t = String(s).trim().replace(/ UTC$/, "Z");
+  if (/^\d{4}-\d{2}-\d{2}$/.test(t)) t += "T12:00:00Z";
+  else if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}/.test(t)) t = t.replace(" ", "T") + (/[zZ]|[+-]\d{2}:?\d{2}$/.test(t) ? "" : "Z");
+  const d = new Date(t);
+  return isNaN(d) ? null : d;
+}
+function age(d) {
+  if (!d) return "no time found";
+  const h = (Date.now() - d) / H;
+  if (h < 1) return `${Math.max(1, Math.round(h * 60))} min ago`;
+  if (h < 48) return `${Math.round(h)} h ago`;
+  return `${Math.round(h / 24)} days ago`;
+}
+const stamp = (d) => d ? new Intl.DateTimeFormat("en-US", { weekday: "short", hour: "numeric", minute: "2-digit", timeZoneName: "short" }).format(d) : "";
+// ok under `warnH` hours, warn under `badH`, bad beyond (or when the time is missing)
+function fresh(d, warnH, badH) {
+  if (!d) return "bad";
+  const h = (Date.now() - d) / H;
+  return h <= warnH ? "ok" : h <= badH ? "warn" : "bad";
+}
+async function get(path, kind = "json") {
+  try {
+    const r = await fetch(path + (path.includes("?") ? "&" : "?") + "t=" + Date.now(), { cache: "no-store" });
+    if (!r.ok) return { err: `HTTP ${r.status}` };
+    if (kind === "js") {                       // window.RECOMMENDED.<league>={...};
+      const s = await r.text();
+      return JSON.parse(s.slice(s.indexOf("=", s.indexOf("RECOMMENDED.")) + 1).trim().replace(/;$/, ""));
+    }
+    return await r.json();
+  } catch (e) { return { err: String(e.message || e).slice(0, 80) }; }
+}
+const row = (state, what, hint, val, detail) => ({ state, what, hint, val, detail });
+const missing = (what, hint, x) => row("bad", what, hint, "Could not be read", x && x.err);
+function timed(what, hint, d, warnH, badH, extra) {
+  return row(fresh(d, warnH, badH), what, hint, `${age(d)}${extra ? " · " + extra : ""}`, stamp(d));
+}
+
+// The feed the value board writes for a dashboard: it must be for the week the dashboard is showing.
+function feedRow(name, feed, prev, week) {
+  const hint = "Typical, prop lines, ladders and the header quarterback come from this";
+  if (!feed || feed.err) return missing(`${name} feed from the value board`, hint, feed);
+  if (week == null) return row("warn", `${name} feed from the value board`, hint, `Feed is for Week ${feed.week}`, "the dashboard's week could not be read");
+  if (feed.week === week) return timed(`${name} feed from the value board`, hint, when(feed.generated), 14, 30, `Week ${feed.week}, matches the dashboard`);
+  if (prev && !prev.err && prev.week === week)
+    return row("bad", `${name} feed from the value board`, hint, `Feed says Week ${feed.week}, dashboard shows Week ${week}`,
+               `the dashboard is on the frozen copy from ${age(when(prev.generated))}: no prop lines, ladders or flagged bets`);
+  return row("bad", `${name} feed from the value board`, hint, `Feed says Week ${feed.week}, dashboard shows Week ${week}`, "the dashboard has no board numbers this week");
+}
+
+async function load() {
+  const p = {
+    nfl: get("/nfl/data/data.json"), nflEpa: get("/nfl/data/epa.json"), nflInj: get("/nfl/data/injuries.json"),
+    cfb: get("/cfb/data/data.json"), cfbEpa: get("/cfb/data/epa.json"), cfbInj: get("/cfb/data/injuries.json"),
+    cfbAvail: get("/cfb/data/availability.json"), cfbQb: get("/cfb/overrides/qb_starters.json"),
+    feedNfl: get("/fb-value-board/docs/feed/nfl.json"), feedNflPrev: get("/fb-value-board/docs/feed/nfl_prev.json"),
+    feedCfb: get("/fb-value-board/docs/feed/cfb.json"), feedCfbPrev: get("/fb-value-board/docs/feed/cfb_prev.json"),
+    moves: get("/fb-value-board/docs/moves.json"),
+    recNfl: get("/fb-value-board/docs/recommended/nfl.js", "js"), recCfb: get("/fb-value-board/docs/recommended/cfb.js", "js"),
+    revNfl: get("/fb-value-board/review/data/nfl/index.json"), revCfb: get("/fb-value-board/review/data/cfb/index.json"),
+    ladder: get("/prop-ladder/results.json"),
+  };
+  const out = {};
+  await Promise.all(Object.keys(p).map(async (k) => { out[k] = await p[k]; }));
+  return out;
+}
+
+function build(d) {
+  const groups = [];
+  const ok = (x) => x && !x.err;
+
+  // ---- NFL Matchups
+  let g = [];
+  const nflWeek = ok(d.nfl) ? d.nfl.schedule.week : null;
+  g.push(ok(d.nfl) ? timed("Stats and schedule", "the NFL dashboard daily update, 10:50 am ET", when(d.nfl.generatedAt), 30, 54,
+                           `through Week ${d.nfl.throughWeek}, showing Week ${nflWeek}`) : missing("Stats and schedule", "data/data.json", d.nfl));
+  if (ok(d.nflEpa) && ok(d.nfl)) {
+    const same = d.nflEpa.week === nflWeek && d.nflEpa.throughWeek === d.nfl.throughWeek;
+    const qbs = Object.values(d.nflEpa.teams || {}).every((t) => Array.isArray(t.qbs));
+    g.push(row(same && qbs ? "ok" : "bad", "EPA page data", "data/epa.json",
+               same ? `Week ${d.nflEpa.week}, matches the stats` : `Week ${d.nflEpa.week} through ${d.nflEpa.throughWeek}, but the stats are Week ${nflWeek} through ${d.nfl.throughWeek}`,
+               qbs ? `${d.nflEpa.teamCount} teams, every team's passers listed` : "the passer list is missing, so the quarterback line shows the season leader"));
+  } else g.push(missing("EPA page data", "data/epa.json", d.nflEpa));
+  g.push(ok(d.nflInj) ? timed("Injury tags", "the Fetch injuries Action, every 3 hours; the page falls back after 2 days", when(d.nflInj.generatedAt), 12, 48,
+                              `${d.nflInj.teamCount} teams`) : missing("Injury tags", "data/injuries.json", d.nflInj));
+  g.push(feedRow("NFL", d.feedNfl, d.feedNflPrev, nflWeek));
+  groups.push(["NFL Matchups", g]);
+
+  // ---- CFB Matchups
+  g = [];
+  const cfbWeek = ok(d.cfb) ? d.cfb.currentWeek : null;
+  g.push(ok(d.cfb) ? timed("Stats and schedule", "the CFB dashboard daily update, 9:35 am ET", when(d.cfb.generatedAt), 30, 54,
+                           `through Week ${d.cfb.throughWeek}, showing Week ${cfbWeek}, ${(d.cfb.weekGames || []).length} games`) : missing("Stats and schedule", "data/data.json", d.cfb));
+  if (ok(d.cfbEpa) && ok(d.cfb)) {
+    const same = d.cfbEpa.week === cfbWeek;
+    g.push(row(same ? "ok" : "bad", "EPA page data", "data/epa.json", same ? `Week ${d.cfbEpa.week}, matches the stats` : `Week ${d.cfbEpa.week}, but the stats show Week ${cfbWeek}`, `${d.cfbEpa.teamCount} teams`));
+  } else g.push(missing("EPA page data", "data/epa.json", d.cfbEpa));
+  g.push(ok(d.cfbInj) ? timed("Injury tags", "written by the daily update", when(d.cfbInj.generatedAt), 30, 54,
+                              `${Object.keys(d.cfbInj.players || {}).length} players tagged`) : missing("Injury tags", "data/injuries.json", d.cfbInj));
+  if (ok(d.cfbAvail)) {
+    const t = when(d.cfbAvail.fetched), st = fresh(t, 36, 1e9);       // never worse than a warning: quiet in non-conference weeks
+    g.push(row(st, "Conference availability reports", "the Fetch availability Action", `${age(t)} · ${Object.keys(d.cfbAvail.teams || {}).length} teams with a live report`, stamp(t)));
+  } else g.push(missing("Conference availability reports", "data/availability.json", d.cfbAvail));
+  if (ok(d.cfbQb)) {
+    const same = d.cfbQb.week === cfbWeek, t = when(d.cfbQb.checked);
+    g.push(row(!same ? "warn" : fresh(t, 48, 96), "Starting quarterbacks", "checked on every daily update",
+               same ? `Week ${d.cfbQb.week}, checked ${d.cfbQb.checked}` : `List is for Week ${d.cfbQb.week}, the site shows Week ${cfbWeek}`,
+               same ? `${Object.keys(d.cfbQb.starters || {}).length} teams` : "until the next daily update the site uses each team's last starter"));
+  } else g.push(missing("Starting quarterbacks", "overrides/qb_starters.json", d.cfbQb));
+  g.push(feedRow("College", d.feedCfb, d.feedCfbPrev, cfbWeek));
+  groups.push(["CFB Matchups", g]);
+
+  // ---- Value boards
+  g = [];
+  g.push(ok(d.feedNfl) ? timed("NFL Value Board, last build", "the Update board Action", when(d.feedNfl.generated), 14, 30, `Week ${d.feedNfl.week}`) : missing("NFL Value Board, last build", "docs/feed/nfl.json", d.feedNfl));
+  g.push(ok(d.feedCfb) ? timed("College Value Board, last build", "the Update college board Action", when(d.feedCfb.generated), 26, 50, `Week ${d.feedCfb.week}`) : missing("College Value Board, last build", "docs/feed/cfb.json", d.feedCfb));
+  g.push(ok(d.moves) ? timed("Market lines", "the Market lines Action and its backup task; bets are priced off these", when(d.moves.lines_as_of || d.moves.at), 10, 26) : missing("Market lines", "docs/moves.json", d.moves));
+  for (const [nm, r, feed] of [["NFL", d.recNfl, d.feedNfl], ["College", d.recCfb, d.feedCfb]]) {
+    if (!ok(r)) { g.push(missing(`Recommended list, ${nm}`, "docs/recommended", r)); continue; }
+    const t = when(r.built), behind = ok(feed) && when(feed.generated) && t && (when(feed.generated) - t) > 2 * H;
+    const open = (r.picks || []).filter((x) => !x.result && !x.dup).length;
+    g.push(row(behind ? "warn" : fresh(t, 30, 54), `Recommended list, ${nm}`, "rebuilt with the board", `${age(t)} · ${r.all ? r.all.graded : 0} graded, ${open} open`,
+               behind ? "older than the board's last build" : stamp(t)));
+  }
+  groups.push(["Value boards and Recommended", g]);
+
+  // ---- Weekly Review and Prop Ladder
+  g = [];
+  for (const [nm, r, wk] of [["NFL", d.revNfl, nflWeek], ["College", d.revCfb, cfbWeek]]) {
+    if (!ok(r) || !(r.weeks || []).length) { g.push(missing(`Weekly Review, ${nm}`, "review/data", r)); continue; }
+    const last = r.weeks[r.weeks.length - 1], want = wk == null ? null : wk - 1;
+    const late = want != null && last.week < want;
+    g.push(row(late ? "warn" : "ok", `Weekly Review, ${nm}`, nm === "NFL" ? "the Tuesday review task" : "the Monday review task",
+               `Latest week reviewed: ${last.week}`, late ? `Week ${want} is finished but not reviewed yet (normal until the review task has run)` : `${last.read_games || 0} games written up`));
+  }
+  g.push(ok(d.ladder) ? timed("Prop Ladder results", "the Prop Ladder refresh Action", when(d.ladder.updatedAt), 60, 120, `${d.ladder.pending} pending`) : missing("Prop Ladder results", "prop-ladder/results.json", d.ladder));
+  groups.push(["Weekly Review and Prop Ladder", g]);
+  return groups;
+}
+
+// The latest run of every workflow in each repo, from GitHub's public API.
+async function actions() {
+  const repos = ["fb-value-board", "nfl", "cfb", "prop-ladder", "rhyman7.github.io"], rows = [];
+  await Promise.all(repos.map(async (repo) => {
+    try {
+      const r = await fetch(`https://api.github.com/repos/rhyman7/${repo}/actions/runs?per_page=60`, { headers: { Accept: "application/vnd.github+json" } });
+      if (r.status === 403 || r.status === 429) { rows.push(row("warn", repo, "GitHub Actions", "GitHub's hourly limit for anonymous requests is used up", "reload in a while")); return; }
+      if (!r.ok) { rows.push(row("warn", repo, "GitHub Actions", `Could not be read (HTTP ${r.status})`)); return; }
+      const seen = new Map();
+      for (const x of (await r.json()).workflow_runs || []) if (!seen.has(x.name)) seen.set(x.name, x);
+      const failed = [], names = [];
+      for (const [name, x] of seen) {
+        names.push(name);
+        if (x.status === "completed" && !["success", "skipped", "cancelled"].includes(x.conclusion)) failed.push(`${name}: ${x.conclusion}, ${age(new Date(x.created_at))}`);
+      }
+      rows.push(failed.length ? row("bad", repo, "latest run of each Action", failed.join(" · "), `${names.length} Actions seen`)
+                              : row("ok", repo, "latest run of each Action", `All ${names.length} succeeded on their latest run`, names.sort().join(", ")));
+    } catch (e) { rows.push(row("warn", repo, "GitHub Actions", "Could not be read", String(e.message || e).slice(0, 80))); }
+  }));
+  const order = Object.fromEntries(repos.map((r, i) => [r, i]));
+  return rows.sort((a, b) => order[a.what] - order[b.what]);
+}
+
+function draw(groups) {
+  const all = groups.flatMap(([, rows]) => rows), n = (s) => all.filter((r) => r.state === s).length;
+  const bad = n("bad"), warn = n("warn");
+  const head = bad ? `${bad} problem${bad > 1 ? "s" : ""}` : warn ? "No problems" : "All current";
+  document.getElementById("summary").firstElementChild.outerHTML =
+    `<strong style="color:var(--${bad ? "bad" : warn ? "warn" : "ok"})">${head}</strong><span>${n("ok")} fine${warn ? `, ${warn} to watch` : ""}${bad ? `, ${bad} wrong` : ""} · checked ${stamp(new Date())}</span>`;
+  document.title = `${bad ? "⚠ " + head : head} · Site status`;
+  document.getElementById("groups").innerHTML = groups.map(([name, rows]) => `<h2>${esc(name)}</h2><div class="card">` + rows.map((r) =>
+    `<div class="row ${r.state}"><span class="dot" title="${r.state}"></span><div class="what">${esc(r.what)}<small>${esc(r.hint || "")}</small></div>` +
+    `<div class="val">${esc(r.val)}${r.detail ? `<small>${esc(r.detail)}</small>` : ""}</div></div>`).join("") + `</div>`).join("");
+}
+
+async function run() {
+  const s = document.getElementById("summary");
+  s.innerHTML = `<strong>Checking…</strong><button id="again" type="button">Check again</button>`;
+  document.getElementById("again").onclick = run;
+  const [data, acts] = await Promise.all([load(), actions()]);
+  const groups = build(data);
+  groups.push(["GitHub Actions", acts]);
+  draw(groups);
+  document.getElementById("again").onclick = run;
+}
+run();
+</script>
+</body>
+</html>
