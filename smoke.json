@@ -1,0 +1,8 @@
+{
+  "base": "/",
+  "pages": [
+    {"path": "", "need": {"a.league-main": 7, "#wgb-bar a": 8}},
+    {"path": "basketball/", "need": {"a.league-main": 2}},
+    {"path": "status/", "optional": true, "need": {"#groups .row": 18}, "wait": 60}
+  ]
+}

@@ -84,6 +84,15 @@ whenever a convention changes.
 
 ## Testing a change
 
+- **Smoke test (added Nov 25, 2026).** `python scripts/smoke.py` loads the pages listed in
+  `smoke.json` in headless Chromium, from this checkout, and fails on a script error, a missing
+  script or stylesheet, a table with too few rows, or "undefined"/"NaN" showing on a page. The
+  **Smoke test** Action (`smoke.yml`) runs it on every pull request and on `main` when a merge
+  changes page code; data-only commits don't start it. A red run on a pull request means don't
+  merge. If a page is added, renamed or removed, or an element it checks is renamed, update
+  `smoke.json` in the same change. The counts are set for the season; out of season, lower any
+  that an empty schedule would trip. `scripts/smoke.py` is the same file in rhyman7/nfl,
+  rhyman7/cfb, rhyman7/fb-value-board and rhyman7.github.io: change it in all four.
 - Serve the repo root (`python -m http.server 8000`) and load `index.html` at desktop and
   phone widths with no page errors and no horizontal scroll.
 - Check every link points at a page that exists in the dashboards' and the value boards' repos
