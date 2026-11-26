@@ -84,12 +84,16 @@ whenever a convention changes.
   term's definition and a link to `/start/`. **The definitions are read from `/start/`**, so
   that page is the only place a definition is written.
 - **It marks, it never links, and it stops no click**, so click-to-sort headers keep working.
-  It leaves table cells, links, buttons and form controls alone, marks each term at most eight
+  It leaves links, buttons, form controls and table cells alone (apart from a heading inside a
+  cell, such as a player's detail card), marks each term at most eight
   times a page, and does nothing on `/start/` and `/status/`. Pages that don't load the site bar
   (Prop Ladder, the manual, basketball) don't get it.
 - **To add a term:** add its entry to `/start/` first, then a line to `TERMS` in `glossary.js`
   with that entry's id. Keep everyday words (Total, Spread, Edge, Unit) out: they would be
   underlined everywhere. A pattern for a whole label starts with `^`.
+- **A page can mark a spot itself:** `<span data-glossary="typical">typical</span>` is marked
+  wherever it sits, whatever its wording or case (the value boards' Players note does this for
+  "typical" and "floor"). The value is the entry's id on `/start/`.
 - **To switch it off everywhere:** set `GLOSSARY = false` in `site-bar.js`.
 - **After changing it,** load one page from each section (a dashboard matchup page, the EPA page,
   both value boards' Games and Model record views, Recommended) and check: terms are underlined,
