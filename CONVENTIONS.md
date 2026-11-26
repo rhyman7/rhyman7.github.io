@@ -44,6 +44,18 @@ whenever a convention changes.
   graphite colors, so it looks the same above the value boards' own theme), scrolls sideways on a
   phone and is hidden in print. If a section is added, renamed or moved, update `LINKS` and
   `section()`. The basketball pages don't load it.
+- **The one-site bar (Nov 25, 2026).** `site-bar.js` now holds two bars. A page that loads it as
+  `<script src="/site-bar.js" data-shell="2"></script>` gets the new one; a page without the
+  attribute keeps the one-row bar above until its site is moved over. The new bar has two rows on
+  a wide screen: the sections, the same on every page (**Matchups, Value Boards, Tools, Record,
+  Help**, with Basketball on the right), then the pages of the section you are in, with a
+  College / NFL switch on Matchups and Value Boards. At 760px and under both rows fold into one
+  menu button. `SECTIONS` in the script is the whole site map: a page added, renamed or moved is
+  changed there and nowhere else. Value Boards' pages are the boards' own `#` views. The hub,
+  Start here and the status page use the new bar; the other sites move one at a time, each
+  removing its own menu in the same change (plan: Project doc
+  `claude/plan-one-site-redesign-2026-11-25.md`). It remembers the last league visited
+  (`localStorage` `wgb-league`) so Matchups and Value Boards open on it.
 - **Hub sections,** in this order: **Matchups and stats** (CFB Matchups, NFL Matchups, under the
   logos), **Value boards** (College Value Board, NFL Value Board; each card lists Best Bets (PDF),
   Model Leans, not bets (PDF) and the boards' seven sections after Manual) and **Tools and record**
