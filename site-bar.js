@@ -79,6 +79,12 @@
     { id: "record", name: "Record", pages: [["Recommended", "/fb-value-board/docs/recommended/"], ["Weekly Review", "/fb-value-board/review/"], ["What's live", "/fb-value-board/docs/whats-live/"]] },
     { id: "help", name: "Help", pages: [["Start here", "/start/"], ["Manual", "/fb-value-board/docs/manual/"]] }
   ];
+  /* Basketball is a side link in the first row, not a section beside the football ones, but on its
+     own pages it gets a second row like theirs: College/NBA and that league's pages. */
+  var HOOPS = { id: "hoops", name: "Basketball", keys: ["cbb", "nba"],
+    leagues: { cbb: ["College", "/cbb/"], nba: ["NBA", "/nba/"] },
+    pages: [["Tonight", "index.html"], ["Team Ratings", "ratings.html"], ["Compare", "compare.html"], ["How to Read", "how-to-read.html"],
+            ["Value Board", { cbb: "/bb-value-board/docs/cbb/", nba: "/bb-value-board/docs/nba/" }]] };
 
   function shell() {
     var path = location.pathname, league = null, sec = null;
@@ -93,13 +99,20 @@
     var last = "cfb";
     try { if (league) localStorage.setItem("wgb-league", league); else last = localStorage.getItem("wgb-league") || "cfb"; } catch (e) {}
     if (last !== "nfl") last = "cfb";
+    var hl = starts("/nba/") || starts("/bb-value-board/docs/nba/") ? "nba" : starts("/cbb/") || starts("/bb-value-board/docs/cbb/") ? "cbb" : null, hlast = "cbb";
+    try { if (hl) localStorage.setItem("wgb-hoops", hl); else hlast = localStorage.getItem("wgb-hoops") || "cbb"; } catch (e) {}
+    if (hlast !== "nba") hlast = "cbb";
+    if (onBasketball(path)) { sec = "hoops"; league = hl; }          // league stays null on the two basketball landing pages
+    var shown = league || (sec === "hoops" ? hlast : null);            // the league whose pages the second row lists
 
     function href(s, page, lg) {
       var h = typeof page[1] === "string" ? page[1] : page[1][lg];
-      return s.leagues ? (h.charAt(0) === "#" ? s.leagues[lg][1] + h : s.leagues[lg][1] + h) : h;
+      return s.leagues && h.charAt(0) !== "/" ? s.leagues[lg][1] + h : h;
     }
     function isCurrent(s, page) {
+      if (s.leagues && !league) return false;
       var h = typeof page[1] === "string" ? page[1] : page[1][league];
+      if (s === HOOPS) { if (h.charAt(0) === "/") return path.indexOf(h) === 0; var f = path.slice(s.leagues[league][1].length) || "index.html"; return starts(s.leagues[league][1]) && (f === h || (h === "index.html" && f === "matchup.html")); }
       if (h.charAt(0) === "#") { var now = location.hash || "#games"; return now === h || (h === "#games" && !/^#(bestbets|leans|players|props|history|ratings|model|matchups|manual)/.test(now)); }
       if (s.leagues) { var file = path.slice(s.leagues[league][1].length) || "index.html"; return file === h; }
       if (h === "/prop-ladder/") return path.indexOf(h) === 0 && !/results\.html$/.test(path);   // its plays, Wide and Pinnacle pages too; never Results
@@ -147,7 +160,7 @@
     var one = el("div", "wgb-row wgb-one");
     if (IN_APP) one.appendChild(appButton("back"));
     one.appendChild(a("Weekly Gridiron Board", "/", "wgb-brand", false));
-    SECTIONS.forEach(function (s) { one.appendChild(a(s.name, href(s, s.pages[0], league || last), "", s.id === sec)); });
+    SECTIONS.forEach(function (s) { one.appendChild(a(s.name, href(s, s.pages[0], sec === "hoops" ? last : league || last), "", s.id === sec)); });
     one.appendChild(a("Basketball", "/basketball/", "wgb-side", onBasketball(path)));
     if (IN_APP) one.appendChild(appButton("reload"));
     var btn = el("button", "wgb-menu-btn");
@@ -158,28 +171,29 @@
 
     var here = null, rowTwo = null, subLinks = [];
     SECTIONS.forEach(function (s) { if (s.id === sec) here = s; });
+    if (sec === "hoops") here = HOOPS;
     if (here) {
       var two = el("div", "wgb-two"); rowTwo = el("div", "wgb-row");
       if (here.leagues) {
         var sw = el("div", "wgb-switch");
-        ["cfb", "nfl"].forEach(function (lg) { sw.appendChild(a(here.leagues[lg][0], here.leagues[lg][1] + (here.id === "boards" ? (location.hash && !/^#\d/.test(location.hash) && /^#[a-z]+$/.test(location.hash) ? location.hash : "") : ""), "", lg === league)); });
+        (here.keys || ["cfb", "nfl"]).forEach(function (lg) { sw.appendChild(a(here.leagues[lg][0], here === HOOPS ? (starts("/bb-value-board/docs/") ? "/bb-value-board/docs/" + lg + "/" : here.leagues[lg][1]) : here.leagues[lg][1] + (here.id === "boards" ? (location.hash && !/^#\d/.test(location.hash) && /^#[a-z]+$/.test(location.hash) ? location.hash : "") : ""), "", lg === league)); });
         rowTwo.appendChild(sw);
       }
-      here.pages.forEach(function (p) { var x = a(p[0], href(here, p, league), "", false); x._page = p; subLinks.push(x); rowTwo.appendChild(x); });
+      here.pages.forEach(function (p) { var x = a(p[0], href(here, p, shown), "", false); x._page = p; subLinks.push(x); rowTwo.appendChild(x); });
       two.appendChild(rowTwo); nav.appendChild(two);
     }
 
     var drawer = el("div", "wgb-drawer");
-    SECTIONS.forEach(function (s) {
+    SECTIONS.concat([HOOPS]).forEach(function (s) {
       var d = el("details"); if (s.id === sec) d.open = true;
       d.appendChild(el("summary", "", s.name));
-      (s.leagues ? ["cfb", "nfl"] : [null]).forEach(function (lg) {
+      if (s === HOOPS) d.appendChild(a("Basketball home", "/basketball/", "", path === "/basketball/" || path === "/basketball/index.html"));
+      (s.leagues ? (s.keys || ["cfb", "nfl"]) : [null]).forEach(function (lg) {
         if (lg) d.appendChild(el("div", "wgb-lg", s.leagues[lg][0]));
         s.pages.forEach(function (p) { var x = a(p[0], href(s, p, lg), "", false); x._page = p; x._sec = s; x._lg = lg; subLinks.push(x); d.appendChild(x); });
       });
       drawer.appendChild(d);
     });
-    drawer.appendChild(a("Basketball", "/basketball/", "", onBasketball(path)));
     nav.appendChild(drawer);
     btn.addEventListener("click", function () { var open = !nav.classList.contains("wgb-open"); nav.classList.toggle("wgb-open", open); btn.setAttribute("aria-expanded", open ? "true" : "false"); });
     drawer.addEventListener("click", function (e) { if (e.target.closest && e.target.closest("a")) { nav.classList.remove("wgb-open"); btn.setAttribute("aria-expanded", "false"); } });
