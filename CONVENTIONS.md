@@ -166,3 +166,11 @@ whenever a convention changes.
 - After changing `site-bar.js`, load one page from each section (hub, a dashboard, a value board,
   Parlays, the Weekly Review) at desktop and phone widths: the bar shows, the right link is marked
   and nothing scrolls sideways because of it.
+
+## Basketball in the bar (Nov 26, 2026)
+
+Basketball stays a side link in the bar's first row, but on its own pages (`/basketball/`, `/nba/`,
+`/cbb/`, `/bb-value-board/`) the bar shows a second row like the football sections': College/NBA,
+then Tonight, Team Ratings, Compare, How to Read and Value Board for that league. It is `HOOPS` in
+`site-bar.js`, beside `SECTIONS`, with its own remembered league (`wgb-hoops`). The phone menu lists
+Basketball as a group with both leagues. The basketball dashboards hide their own menus under it.
