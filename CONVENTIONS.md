@@ -61,12 +61,36 @@ whenever a convention changes.
 - Keep the footer credit for weather data (Open-Meteo).
 - **Favicon:** the RH monogram, as `favicon.ico`, `favicon-192.png` and `apple-touch-icon.png` at the repo root (the same three files in rhyman7/nfl, rhyman7/cfb, rhyman7.github.io and rhyman7/fb-value-board). Every page links all three in `<head>`, right after the viewport meta; a new page gets the same three lines.
 
+## Status page (`status/index.html`, added Nov 25, 2026)
+
+- `/status/` answers one question: is every page running on current data? It is for Ryan, so it
+  is **not linked** from the hub or the site bar and carries `noindex`. It is still a public
+  address (GitHub Pages has no private pages), so it shows only what the site already publishes:
+  build times, week numbers and counts. Never put keys, licensed (PFF) data or bets on it.
+- It keeps nothing: on each load the browser reads the small files each site publishes
+  (dashboards' `data.json`, `epa.json`, `injuries.json`, college `availability.json` and
+  `overrides/qb_starters.json`; the value boards' `docs/feed/*.json`, `docs/moves.json`,
+  `docs/recommended/*.js`, `review/data/*/index.json`; Prop Ladder's `results.json`) and the
+  latest run of each GitHub Action from GitHub's public API (five requests a load, 60 an hour
+  allowed without signing in). It never loads the value boards' own multi-megabyte `data.json`.
+- Each row is green, amber or red from rules in the page's `build()`: a file's age against how
+  often its job runs, and week numbers that must agree (the board feed's `week` against the
+  dashboard's, the EPA file's against the stats, the quarterback list's against the stats). The
+  Claude scheduled tasks can't be read from a web page, so each shows through the file it writes.
+- **Keep it in step:** if a data file, a field it reads (`generatedAt`, `week`, `throughWeek`,
+  `currentWeek`, `generated`, `built`, `lines_as_of`, `fetched`, `checked`, `updatedAt`) or a job's
+  schedule changes in any of the repos, update the row here in the same change. A new job that
+  writes a file the pages depend on gets a row.
+
 ## Testing a change
 
 - Serve the repo root (`python -m http.server 8000`) and load `index.html` at desktop and
   phone widths with no page errors and no horizontal scroll.
 - Check every link points at a page that exists in the dashboards' and the value boards' repos
   (their `main`).
+- After changing `status/index.html`, load it on the live data: every row fills in, no row says
+  "undefined", and no page errors. Then make one file look wrong (old or a different week) and
+  confirm its row turns red.
 - After changing `site-bar.js`, load one page from each section (hub, a dashboard, a value board,
   Parlays, the Weekly Review) at desktop and phone widths: the bar shows, the right link is marked
   and nothing scrolls sideways because of it.
