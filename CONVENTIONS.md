@@ -76,6 +76,25 @@ whenever a convention changes.
   where they are (EPA Explained, Ratings Explained, How to Read Matchups, the value boards'
   manual); this page defines and points.
 
+## Glossary hints (`glossary.js`, added Nov 25, 2026)
+
+- `site-bar.js` loads `glossary.js` on every football page. Where one of about 35 site terms
+  (Typical, CLV, No-vig, Rung, EPA / play, SRS, ATS and so on) appears in a heading, a column
+  header or a label, it gets a dotted underline; hovering, focusing or tapping it shows the
+  term's definition and a link to `/start/`. **The definitions are read from `/start/`**, so
+  that page is the only place a definition is written.
+- **It marks, it never links, and it stops no click**, so click-to-sort headers keep working.
+  It leaves table cells, links, buttons and form controls alone, marks each term at most eight
+  times a page, and does nothing on `/start/` and `/status/`. Pages that don't load the site bar
+  (Prop Ladder, the manual, basketball) don't get it.
+- **To add a term:** add its entry to `/start/` first, then a line to `TERMS` in `glossary.js`
+  with that entry's id. Keep everyday words (Total, Spread, Edge, Unit) out: they would be
+  underlined everywhere. A pattern for a whole label starts with `^`.
+- **To switch it off everywhere:** set `GLOSSARY = false` in `site-bar.js`.
+- **After changing it,** load one page from each section (a dashboard matchup page, the EPA page,
+  both value boards' Games and Model record views, Recommended) and check: terms are underlined,
+  a hint opens and closes, a sortable header still sorts, and there are no page errors.
+
 ## Status page (`status/index.html`, added Nov 25, 2026)
 
 - `/status/` answers one question: is every page running on current data? It is for Ryan, so it
