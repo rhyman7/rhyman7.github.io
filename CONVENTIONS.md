@@ -61,6 +61,21 @@ whenever a convention changes.
 - Keep the footer credit for weather data (Open-Meteo).
 - **Favicon:** the RH monogram, as `favicon.ico`, `favicon-192.png` and `apple-touch-icon.png` at the repo root (the same three files in rhyman7/nfl, rhyman7/cfb, rhyman7.github.io and rhyman7/fb-value-board). Every page links all three in `<head>`, right after the viewport meta; a new page gets the same three lines.
 
+## Start here (`start/index.html`, added Nov 25, 2026)
+
+- `/start/` is the page for someone new: a "Where to go" list of the sections, and a glossary of
+  the terms the whole site uses (Typical, rung, closing line value, EPA and so on), grouped by
+  where they appear, with a find box. The hub links to it under its heading. It is not in the
+  site bar.
+- **Each term says what it means on this site**, in one or two plain sentences, with a number
+  where a number helps. Every term has an id from its name (`/start/#typical`), so other pages can
+  link straight to it.
+- **Keep it in step:** when a page starts using a new term or changes what one means (a new tier,
+  a renamed section, a new stat), add or fix the entry in the same change. When a section is
+  added, renamed or removed, update "Where to go" with the hub cards. The fuller explanations stay
+  where they are (EPA Explained, Ratings Explained, How to Read Matchups, the value boards'
+  manual); this page defines and points.
+
 ## Status page (`status/index.html`, added Nov 25, 2026)
 
 - `/status/` answers one question: is every page running on current data? It is for Ryan, so it

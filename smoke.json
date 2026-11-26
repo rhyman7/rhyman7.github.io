@@ -3,6 +3,7 @@
   "pages": [
     {"path": "", "need": {"a.league-main": 7, "#wgb-bar a": 8}},
     {"path": "basketball/", "need": {"a.league-main": 2}},
+    {"path": "start/", "need": {".term": 60, "ul.pages li": 8}},
     {"path": "status/", "optional": true, "need": {"#groups .row": 18}, "wait": 60}
   ]
 }
