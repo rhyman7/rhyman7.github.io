@@ -5,10 +5,12 @@
 
    - The definitions are READ FROM /start/, so that page is the only place they are written.
    - Nothing is turned into a link and no click is stopped: click-to-sort headers keep working.
-   - Table cells, links, buttons and form controls are left alone, so a term is marked where it is
-     introduced (the header), not on every row.
+   - Links, buttons and form controls are left alone, and so are table cells apart from a heading
+     inside one, so a term is marked where it is introduced (the header), not on every row.
    - To switch it off everywhere, set GLOSSARY = false in site-bar.js.
-   To add a term: add it to /start/ first, then add a line to TERMS with that entry's id. */
+   To add a term: add it to /start/ first, then add a line to TERMS with that entry's id.
+   A page can also mark a spot itself: <span data-glossary="typical">typical</span> is marked wherever
+   it sits (in running text, a table cell, anywhere), whatever its wording or case. */
 (function () {
   "use strict";
   if (window.__wgbGlossary) return;
@@ -20,6 +22,7 @@
   var TERMS = [
     [/\bRecord-adjusted EV\b/i, "record-adjusted-ev"],
     [/\bTypical\b/, "typical"],
+    [/\bEvery-game floors?\b/i, "floor"],
     [/\bFloors?\b/, "floor"],
     [/\bCLV\b|\bClosing line value\b/i, "closing-line-value-clv"],
     [/\bNo-vig\b/i, "no-vig-chance"],
@@ -57,7 +60,7 @@
   ];
   var ANY = new RegExp(TERMS.map(function (t) { return t[0].source; }).join("|"), "i");
   /* Where a term may be marked: headings, headers and labels. Never inside these: */
-  var SKIP = "td, a, button, select, option, input, textarea, svg, script, style, code, pre, nav, #wgb-bar, .wgb-term, #wgb-tip, [contenteditable]";
+  var SKIP = "a, button, select, option, input, textarea, svg, script, style, code, pre, nav, #wgb-bar, .wgb-term, #wgb-tip, [contenteditable]";
   var HOSTS = "th, h1, h2, h3, h4, h5, dt, legend, caption, summary, label, [class*='label'], [class*='lbl'], [class*='title'], [class*='head'], [class*='tile'], [class*='chip'], [class*='badge'], [class*='key'], [class*='pre'], [class*='tag']";
   var MAX_TEXT = 60, MAX_MARKS = 300, MAX_EACH = 8;   /* a term repeated on every card is marked on the first few only */
 
@@ -107,7 +110,11 @@
   function mark(node) {
     var text = node.nodeValue, parent = node.parentElement;
     if (!parent || text.length > MAX_TEXT || !ANY.test(text)) return;
-    if (parent.closest(SKIP) || !parent.closest(HOSTS)) return;
+    if (parent.closest(SKIP)) return;
+    var host = parent.closest(HOSTS), cell = parent.closest("td");
+    if (!host) return;
+    /* in a table cell only a real heading counts (a detail card opened inside a row), so a term is not marked on every row */
+    if (cell && !(cell.contains(host) && /^(H[1-5]|DT|SUMMARY|LEGEND|TH)$/.test(host.tagName))) return;
     var whole = text.trim();
     for (var i = 0; i < TERMS.length; i++) {
       var m = TERMS[i][0].exec(TERMS[i][0].source.charAt(0) === "^" ? whole : text);
@@ -130,6 +137,13 @@
     var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null), nodes = [], n;
     while ((n = walker.nextNode())) if (n.nodeValue.length <= MAX_TEXT && n.nodeValue.length > 1) nodes.push(n);
     for (var i = 0; i < nodes.length && marks < MAX_MARKS; i++) mark(nodes[i]);
+    /* spots a page marked itself with data-glossary="<id>" */
+    var own = document.querySelectorAll("[data-glossary]:not(.wgb-term)");
+    for (var j = 0; j < own.length; j++) {
+      var id = own[j].getAttribute("data-glossary");
+      if (!defs[id]) continue;
+      own[j].classList.add("wgb-term"); own[j].setAttribute("data-term", id); own[j].tabIndex = 0;
+    }
     if (observer) observer.observe(document.body, { childList: true, subtree: true });
   }
   function later() { if (!pending) pending = setTimeout(scan, 350); }
