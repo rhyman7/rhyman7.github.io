@@ -1,5 +1,6 @@
-/* Weekly Gridiron Board site bar: one strip across the top of every football page
-   (the hub, both matchup dashboards, both value boards, Parlays, the Weekly Review and Recommended).
+/* Weekly Gridiron Board site bar: one strip across the top of every page
+   (the hub, both matchup dashboards, both value boards, Parlays, the Weekly Review, Recommended, the
+   manual, Prop Ladder and the basketball pages).
    Each page loads it with <script src="/site-bar.js"></script> as the first thing in <body>.
    It writes its own markup and styles, so a change here reaches every page at once.
    If it fails to load (a page opened from disk or a local server), the page is unchanged. */
@@ -18,6 +19,47 @@
     document.head.appendChild(gs);
   }
 
+
+  /* ---- The site as an installed phone app (Nov 26, 2026). manifest.webmanifest at the site's root
+     makes the whole of rhyman7.github.io installable as one full-screen app. Every page that loads
+     this script gets the manifest link, the bar color and the iPhone tags from here, so a page
+     needs nothing of its own. An installed app has no browser buttons, so when the page is running
+     as one (display-mode standalone, or iPhone's navigator.standalone) the bar gains a Back arrow
+     and a Reload button. In an ordinary browser tab neither is added and the bar is unchanged. */
+  (function () {
+    var head = document.head;
+    function tag(name, attrs, sel) {
+      if (head.querySelector(sel)) return;
+      var e = document.createElement(name);
+      for (var k in attrs) e.setAttribute(k, attrs[k]);
+      head.appendChild(e);
+    }
+    tag("link", { rel: "manifest", href: "/manifest.webmanifest" }, 'link[rel="manifest"]');
+    tag("meta", { name: "theme-color", content: "#0e0f11" }, 'meta[name="theme-color"]');
+    tag("meta", { name: "mobile-web-app-capable", content: "yes" }, 'meta[name="mobile-web-app-capable"]');
+    tag("meta", { name: "apple-mobile-web-app-capable", content: "yes" }, 'meta[name="apple-mobile-web-app-capable"]');
+    tag("meta", { name: "apple-mobile-web-app-status-bar-style", content: "black" }, 'meta[name="apple-mobile-web-app-status-bar-style"]');
+    tag("meta", { name: "apple-mobile-web-app-title", content: "Gridiron" }, 'meta[name="apple-mobile-web-app-title"]');
+  })();
+  var IN_APP = false;
+  try { IN_APP = navigator.standalone === true || (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches); } catch (e) {}
+  var APP_CSS =
+    "#wgb-bar .wgb-app{flex:none;display:flex;align-items:center;justify-content:center;width:44px;min-height:44px;padding:0;background:transparent;" +
+    "border:0;color:#f2f1ee;cursor:pointer}#wgb-bar .wgb-app:focus-visible{outline:2px solid #f2f1ee;outline-offset:-2px}" +
+    "#wgb-bar .wgb-app.wgb-back{margin-left:-12px}#wgb-bar .wgb-app.wgb-reload{margin-left:auto}#wgb-bar .wgb-app.wgb-reload + .wgb-menu-btn{margin-left:0}";
+  function appButton(kind) {
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "wgb-app wgb-" + kind;
+    b.setAttribute("aria-label", kind === "back" ? "Back" : "Reload this page");
+    b.innerHTML = '<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' +
+      (kind === "back" ? '<path d="M15 5l-7 7 7 7"></path>' : '<path d="M20 11a8 8 0 1 0-2.3 6.3"></path><path d="M20 4v7h-7"></path>') + "</svg>";
+    b.addEventListener("click", function () {
+      if (kind === "reload") { location.reload(); return; }
+      if (history.length > 1) history.back(); else location.href = "/";
+    });
+    return b;
+  }
+  function onBasketball(path) { return /^\/(basketball|nba|cbb|bb-value-board)\//.test(path); }
 
   /* ---- The one-site bar (Nov 25, 2026). A page opts in with
      <script src="/site-bar.js" data-shell="2"></script>; a page without the attribute keeps the
@@ -94,7 +136,7 @@
       "#wgb-bar .wgb-row{padding:0 6px 0 16px}#wgb-bar.wgb-open .wgb-drawer{display:block}}" +
       "@media print{#wgb-bar{display:none !important}}";
     var style = document.createElement("style");
-    style.id = "wgb-bar-style"; style.textContent = css; document.head.appendChild(style);
+    style.id = "wgb-bar-style"; style.textContent = css + (IN_APP ? APP_CSS : ""); document.head.appendChild(style);
 
     var nav = document.createElement("nav");
     nav.id = "wgb-bar"; nav.className = "no-print wgb-shell"; nav.setAttribute("aria-label", "Weekly Gridiron Board");
@@ -102,9 +144,11 @@
     function a(text, to, cls, cur) { var x = el("a", cls, text); x.href = to; if (cur) x.setAttribute("aria-current", "page"); return x; }
 
     var one = el("div", "wgb-row wgb-one");
+    if (IN_APP) one.appendChild(appButton("back"));
     one.appendChild(a("Weekly Gridiron Board", "/", "wgb-brand", false));
     SECTIONS.forEach(function (s) { one.appendChild(a(s.name, href(s, s.pages[0], league || last), "", s.id === sec)); });
-    one.appendChild(a("Basketball", "/basketball/", "wgb-side", false));
+    one.appendChild(a("Basketball", "/basketball/", "wgb-side", onBasketball(path)));
+    if (IN_APP) one.appendChild(appButton("reload"));
     var btn = el("button", "wgb-menu-btn");
     btn.type = "button"; btn.setAttribute("aria-label", "Menu"); btn.setAttribute("aria-expanded", "false");
     btn.innerHTML = '<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>';
@@ -134,7 +178,7 @@
       });
       drawer.appendChild(d);
     });
-    drawer.appendChild(a("Basketball", "/basketball/", "", false));
+    drawer.appendChild(a("Basketball", "/basketball/", "", onBasketball(path)));
     nav.appendChild(drawer);
     btn.addEventListener("click", function () { var open = !nav.classList.contains("wgb-open"); nav.classList.toggle("wgb-open", open); btn.setAttribute("aria-expanded", open ? "true" : "false"); });
     drawer.addEventListener("click", function (e) { if (e.target.closest && e.target.closest("a")) { nav.classList.remove("wgb-open"); btn.setAttribute("aria-expanded", "false"); } });
@@ -202,7 +246,8 @@
 
   var style = document.createElement("style");
   style.id = "wgb-bar-style";
-  style.textContent = css;
+  style.textContent = css + (IN_APP ? APP_CSS + "#wgb-bar .wgb-app{position:sticky;z-index:1;background:#0e0f11}#wgb-bar .wgb-app.wgb-back{left:0;margin:0 -10px 0 -28px}#wgb-bar .wgb-app.wgb-reload{right:0;margin:0 -28px 0 0}" +
+    "@media (max-width:820px){#wgb-bar .wgb-app.wgb-back{margin-left:-16px}#wgb-bar .wgb-app.wgb-reload{margin-right:-16px}}" : "");
   document.head.appendChild(style);
 
   var nav = document.createElement("nav");
@@ -220,15 +265,17 @@
     return a;
   }
 
+  if (IN_APP) nav.appendChild(appButton("back"));
   link("Weekly Gridiron Board", "/", "wgb-brand", false);
   var current = null;
   LINKS.forEach(function (l) { var a = link(l[0], l[1], "", l[2] === here); if (l[2] === here) current = a; });
-  link("Basketball", "/basketball/", "wgb-side", false);
+  link("Basketball", "/basketball/", "wgb-side", onBasketball(location.pathname));
+  if (IN_APP) nav.appendChild(appButton("reload"));
 
   /* On a narrow screen the row scrolls sideways: start it at the current section. */
   function place() {
     document.body.insertBefore(nav, document.body.firstChild);
-    if (current && nav.scrollWidth > nav.clientWidth) nav.scrollLeft = Math.max(0, current.offsetLeft - 16);
+    if (current && nav.scrollWidth > nav.clientWidth) nav.scrollLeft = Math.max(0, current.offsetLeft - (IN_APP ? 56 : 16));
   }
   if (document.body) place();
   else document.addEventListener("DOMContentLoaded", place);
