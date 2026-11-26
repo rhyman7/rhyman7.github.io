@@ -58,7 +58,9 @@ whenever a convention changes.
   (`localStorage` `wgb-league`) so Matchups and Value Boards open on it.
 - **Installable app (Nov 26, 2026).** The whole site installs to a phone's home screen as one app,
   "Gridiron". `manifest.webmanifest` (scope `/`, opens the hub, no browser chrome) and the icons
-  `favicon-192.png`, `icon-512.png` and `icon-maskable-512.png` live in the repo root. `site-bar.js`
+  `favicon-192.png`, `icon-512.png` and `icon-maskable-512.png` live in the repo root. The two 512px
+  icons are rendered from `img/rh-monogram.svg`, an outline traced from the 192px art (Nov 26, 2026), so
+  they are sharp at full size; redraw them from that file, not by enlarging a PNG. `site-bar.js`
   adds the manifest link and the phone app tags to every page that loads it, so a new page needs
   nothing extra; the hub also carries them in its own `<head>`. Opened from the home screen
   (`IN_APP`), both bars add a Back arrow on the left and a Reload button on the right, because the
