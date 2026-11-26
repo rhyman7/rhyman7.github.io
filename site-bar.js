@@ -102,6 +102,7 @@
       var h = typeof page[1] === "string" ? page[1] : page[1][league];
       if (h.charAt(0) === "#") { var now = location.hash || "#games"; return now === h || (h === "#games" && !/^#(bestbets|leans|players|props|history|ratings|model|matchups|manual)/.test(now)); }
       if (s.leagues) { var file = path.slice(s.leagues[league][1].length) || "index.html"; return file === h; }
+      if (h === "/prop-ladder/") return path.indexOf(h) === 0 && !/results\.html$/.test(path);   // its plays, Wide and Pinnacle pages too; never Results
       return path === h || path === h + "index.html";
     }
 
